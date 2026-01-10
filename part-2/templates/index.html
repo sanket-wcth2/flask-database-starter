@@ -36,6 +36,11 @@
     <a href="{{ url_for('add_student') }}" class="btn btn-add">+ Add New Student</a>
 
     {% if students %}
+        <form method="get" action="{{ url_for('index') }}">
+            <input type="text" name="search" placeholder="Search by name">
+            <button type="submit">Search</button>
+        </form>
+
         <table>
             <tr>
                 <th>ID</th>
