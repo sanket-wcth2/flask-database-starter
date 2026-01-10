@@ -19,7 +19,7 @@ import sqlite3
 app = Flask(__name__)
 app.secret_key = 'your-secret-key-here'  # Required for flash messages
 
-DATABASE = 'students.db'
+DATABASE = 'part2-students.db'
 
 
 def get_db_connection():

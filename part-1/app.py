@@ -17,7 +17,7 @@ import sqlite3  # Built-in Python library for SQLite database
 
 app = Flask(__name__)
 
-DATABASE = 'students.db'  # Database file name (will be created automatically)
+DATABASE = 'part1-students.db'  # Database file name (will be created automatically)
 
 
 # =============================================================================
@@ -65,7 +65,7 @@ def add_sample_student():
     conn = get_db_connection()
     conn.execute(
         'INSERT INTO students (name, email, course) VALUES (?, ?, ?)',
-        ('John Doe', 'john@example.com', 'Python')  # ? are placeholders (safe from SQL injection)
+        ('Saitama', 'saitama@example.com', 'SQL')  # ? are placeholders (safe from SQL injection)
     )
     conn.commit()  # Don't forget to commit!
     conn.close()
