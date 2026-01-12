@@ -17,7 +17,7 @@ from flask import Flask, render_template, request, redirect, url_for, flash
 import sqlite3
 
 app = Flask(__name__)
-app.secret_key = 'your-secret-key-here'  # Required for flash messages
+app.secret_key = 'password'  # Required for flash messages
 
 DATABASE = 'part2-students.db'
 
