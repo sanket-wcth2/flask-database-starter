@@ -37,6 +37,9 @@ class Course(db.Model):  # Course table
     name = db.Column(db.String(100), nullable=False)  # Course name
     description = db.Column(db.Text)  # Optional description
 
+    # Foreign Key: Links course to a teacher
+    teacher_id = db.Column(db.Integer, db.ForeignKey('teacher.id'), nullable=True)   
+
     # Relationship: One Course has Many Students
     students = db.relationship('Student', backref='course', lazy=True)
 
@@ -55,6 +58,15 @@ class Student(db.Model):  # Student table
     def __repr__(self):
         return f'<Student {self.name}>'
 
+class Teacher(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String(100), nullable=False)
+    email = db.Column(db.String(120), unique=True, nullable=False)
+
+    courses = db.relationship('Course', backref='teacher', lazy=True)
+
+    def __repr__(self):
+        return f'<Teacher {self.name}>'
 
 # =============================================================================
 # ROUTES - Using ORM instead of raw SQL
@@ -127,16 +139,44 @@ def delete_student(id):
 def add_course():
     if request.method == 'POST':
         name = request.form['name']
-        description = request.form.get('description', '')  # Optional field
+        description = request.form.get('description', '')
+        teacher_name = request.form['teacher_name']
 
-        new_course = Course(name=name, description=description)
+        # 🔍 Check if teacher already exists
+        teacher = Teacher.query.filter_by(name=teacher_name).first()
+
+        # ➕ If not exists, create new teacher
+        if not teacher:
+            teacher = Teacher(
+                name=teacher_name,
+                email=f"{teacher_name.lower().replace(' ', '')}@example.com"
+            )
+            db.session.add(teacher)
+            db.session.commit()
+
+        # ✅ Create course and assign teacher
+        new_course = Course(
+            name=name,
+            description=description,
+            teacher_id=teacher.id
+        )
+
         db.session.add(new_course)
         db.session.commit()
 
-        flash('Course added!', 'success')
+        flash('Course and Teacher added successfully!', 'success')
         return redirect(url_for('courses'))
 
     return render_template('add_course.html')
+
+
+
+@app.route('/teachers')
+def teachers():
+    teachers = Teacher.query.all()
+    return render_template('teachers.html', teachers=teachers)
+
+
 
 
 # =============================================================================
@@ -148,12 +188,22 @@ def init_db():
     with app.app_context():
         db.create_all()  # Create all tables based on models
 
+        #sample teachers
+        if Teacher.query.count() == 0:
+            sample_teachers = [
+                Teacher(name='Soham Sharma', email='soham@example.com'),
+                Teacher(name='Rahul Patil', email='rahul@example.com'),
+                Teacher(name='Sahil Verma', email='sahil@example.com')
+            ]
+            db.session.add_all(sample_teachers)
+            db.session.commit()
+            print('Sample teachers added!')
         # Add sample courses if none exist
         if Course.query.count() == 0:
             sample_courses = [
-                Course(name='Python Basics', description='Learn Python programming fundamentals'),
-                Course(name='Web Development', description='HTML, CSS, JavaScript and Flask'),
-                Course(name='Data Science', description='Data analysis with Python'),
+                Course(name='Python Basics', description='Learn Python programming fundamentals', teacher_id=1),
+                Course(name='Web Development', description='HTML, CSS, JavaScript and Flask', teacher_id=2),
+                Course(name='Data Science', description='Data analysis with Python', teacher_id=3),
             ]
             db.session.add_all(sample_courses)  # Add multiple at once
             db.session.commit()

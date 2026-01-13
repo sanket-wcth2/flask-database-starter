@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Teachers</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 40px;
+            background: #f0f4f8;
+        }
+        h1 {
+            color: #2c3e50;
+        }
+        nav {
+            margin-bottom: 20px;
+        }
+        nav a {
+            margin-right: 15px;
+            color: #3498db;
+            text-decoration: none;
+            font-weight: bold;
+        }
+        .teacher-card {
+            background: white;
+            padding: 20px;
+            margin: 15px 0;
+            border-radius: 8px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+        .teacher-name {
+            color: #9b59b6;
+            font-size: 18px;
+            font-weight: bold;
+        }
+        .badge {
+            display: inline-block;
+            background: #9b59b6;
+            color: white;
+            padding: 4px 10px;
+            border-radius: 12px;
+            font-size: 12px;
+            margin-right: 5px;
+        }
+        .student-badge {
+            background: #27ae60;
+        }
+        .muted {
+            color: #666;
+            font-size: 14px;
+        }
+    </style>
+</head>
+<body>
+
+<h1>Teachers</h1>
+
+<nav>
+    <a href="{{ url_for('index') }}">Students</a>
+    <a href="{{ url_for('courses') }}">Courses</a>
+    <a href="{{ url_for('teachers') }}">Teachers</a>
+</nav>
+
+{% for teacher in teachers %}
+<div class="teacher-card">
+    <div class="teacher-name">{{ teacher.name }}</div>
+    <div class="muted">{{ teacher.email }}</div>
+    <br>
+
+    <strong>Courses:</strong>
+    {% if teacher.courses %}
+        {% for course in teacher.courses %}
+            <span class="badge">{{ course.name }}</span>
+        {% endfor %}
+    {% else %}
+        <span class="muted">None</span>
+    {% endif %}
+    <br><br>
+
+    <strong>Students:</strong>
+    {% set total_students = 0 %}
+    {% for course in teacher.courses %}
+        {% set total_students = total_students + (course.students | length) %}
+    {% endfor %}
+    <span class="badge student-badge">{{ total_students }}</span>
+</div>
+{% else %}
+<p>No teachers found.</p>
+{% endfor %}
+
+</body>
+</html>

@@ -24,6 +24,9 @@
         <label for="description">Description (optional):</label>
         <textarea id="description" name="description" placeholder="Brief description of the course..."></textarea>
 
+        <laber for="teacher_name">Teacher Name:</label>
+        <input type="text" id="teacher_name" name="teacher_name" required placeholder="e.g., John Doe">
+
         <button type="submit" class="btn btn-submit">Add Course</button>
         <a href="{{ url_for('courses') }}" class="btn btn-cancel">Cancel</a>
     </form>

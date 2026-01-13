@@ -22,6 +22,7 @@
     <nav>
         <a href="{{ url_for('index') }}">Students</a>
         <a href="{{ url_for('courses') }}">Courses</a>
+        <a href="{{ url_for('teachers') }}">Teachers</a>
     </nav>
 
     {% with messages = get_flashed_messages(with_categories=true) %}
@@ -37,6 +38,7 @@
     {% for course in courses %}
     <div class="course-card">
         <h3>{{ course.name }}</h3>
+        <p><strong>Teacher:</strong> {{ course.teacher.name }}</p>
         <p>{{ course.description or 'No description' }}</p>
         <p>
             <span class="student-count">{{ course.students|length }} students enrolled</span>
