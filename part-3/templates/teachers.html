@@ -77,11 +77,11 @@
     <br><br>
 
     <strong>Students:</strong>
-    {% set total_students = 0 %}
+    {% set ns = namespace(total=0) %}
     {% for course in teacher.courses %}
-        {% set total_students = total_students + (course.students | length) %}
+        {% set ns.total = ns.total + (course.students | length) %}
     {% endfor %}
-    <span class="badge student-badge">{{ total_students }}</span>
+    <span class="badge student-badge">{{ ns.total }}</span>
 </div>
 {% else %}
 <p>No teachers found.</p>

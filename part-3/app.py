@@ -124,6 +124,18 @@ def edit_student(id):
     courses = Course.query.all()
     return render_template('edit.html', student=student, courses=courses)
 
+@app.route('/edit-course/<int:id>', methods=['GET', 'POST'])
+def edit_course(id):
+    course = Course.query.get_or_404(id)
+
+    if request.method == 'POST':
+        course.name = request.form['name']
+        course.description = request.form.get('description', '')
+        db.session.commit()
+        flash('Course updated!', 'success')
+        return redirect(url_for('courses'))
+
+    return render_template('edit_course.html', course=course)
 
 @app.route('/delete/<int:id>')
 def delete_student(id):
@@ -134,6 +146,19 @@ def delete_student(id):
     flash('Student deleted!', 'danger')
     return redirect(url_for('index'))
 
+@app.route('/delete-course/<int:id>')
+def delete_course(id):
+    course = Course.query.get_or_404(id)
+    teacher = course.teacher
+    db.session.delete(course)  # Delete the object
+    db.session.commit()
+
+    if teacher and len(teacher.courses) == 0:
+        db.session.delete(teacher)
+        db.session.commit()
+
+    flash('Course and its teacher deleted!', 'danger')
+    return redirect(url_for('courses'))
 
 @app.route('/add-course', methods=['GET', 'POST'])
 def add_course():
@@ -142,10 +167,10 @@ def add_course():
         description = request.form.get('description', '')
         teacher_name = request.form['teacher_name']
 
-        # 🔍 Check if teacher already exists
+        # Check if teacher already exists
         teacher = Teacher.query.filter_by(name=teacher_name).first()
 
-        # ➕ If not exists, create new teacher
+        # If not exists, create new teacher
         if not teacher:
             teacher = Teacher(
                 name=teacher_name,
@@ -154,7 +179,6 @@ def add_course():
             db.session.add(teacher)
             db.session.commit()
 
-        # ✅ Create course and assign teacher
         new_course = Course(
             name=name,
             description=description,

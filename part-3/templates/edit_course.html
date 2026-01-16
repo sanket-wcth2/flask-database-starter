@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Edit Course</title>
+    <style>
+        body{font-family:Arial;margin:40px;background:#f0f4f8}
+        form{background:#fff;padding:30px;border-radius:8px;width:400px;
+             box-shadow:0 2px 5px rgba(0,0,0,.1)}
+        label{font-weight:bold}
+        input,textarea{width:100%;padding:10px;margin:10px 0}
+        button{padding:10px 20px;background:#3498db;color:#fff;border:none}
+        a{margin-left:10px}
+    </style>
+</head>
+<body>
+
+<h1>Edit Course</h1>
+
+<form method="POST">
+    <label>Course Name</label>
+    <input type="text" name="name" value="{{ course.name }}" required>
+
+    <label>Description</label>
+    <textarea name="description">{{ course.description }}</textarea>
+
+    <button type="submit">Update</button>
+    <a href="{{ url_for('courses') }}">Cancel</a>
+</form>
+
+</body>
+</html>
