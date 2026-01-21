@@ -16,8 +16,10 @@ Prerequisites: Complete part-3 (SQLAlchemy)
 from flask import Flask, request, jsonify
 from flask_sqlalchemy import SQLAlchemy
 from datetime import datetime
+from flask_cors import CORS
 
 app = Flask(__name__)
+CORS(app)  # Enable CORS for all routes
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///api_demo.db'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
@@ -322,6 +324,60 @@ def delete_author(id):
     db.session.commit()
 
     return jsonify({'success': True, 'message': 'Author deleted'})
+
+#pageination
+
+@app.route('/api/books-with-pagination', methods=['GET'])
+def get_books_with_pagination():
+    page = request.args.get('page', 1, type=int)
+    per_page = request.args.get('per_page', 10, type=int)
+
+    pagination = Book.query.paginate(
+        page=page,
+        per_page=per_page,
+        error_out=False
+    )
+
+    books = pagination.items
+
+    return jsonify({
+        'success': True,
+        'page': pagination.page,
+        'per_page': pagination.per_page,
+        'total_books': pagination.total,
+        'total_pages': pagination.pages,
+        'books': [book.to_dict() for book in books]
+    })
+
+#sorting
+
+@app.route('/api/books-with-sorting', methods=['GET'])
+def get_books_with_sorting():
+    sort_field = request.args.get('sort', 'title')
+    order = request.args.get('order', 'asc')
+
+    # Allowed fields (important for security)
+    allowed_fields = {
+        'title': Book.title,
+        'year': Book.year,
+        'created_at': Book.created_at
+    }
+
+    sort_column = allowed_fields.get(sort_field, Book.title)
+
+    if order == 'desc':
+        sort_column = sort_column.desc()
+    else:
+        sort_column = sort_column.asc()
+
+    books = Book.query.order_by(sort_column).all()
+
+    return jsonify({
+        'success': True,
+        'sort': sort_field,
+        'order': order,
+        'books': [book.to_dict() for book in books]
+    })
 
 
 # =============================================================================
