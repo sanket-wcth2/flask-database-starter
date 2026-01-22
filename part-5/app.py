@@ -106,6 +106,27 @@ def delete_product(id):
     flash('Product deleted!', 'danger')
     return redirect(url_for('index'))
 
+@app.route('/edit/<int:id>', methods=['GET', 'POST'])
+def edit_product(id):
+    product = Product.query.get_or_404(id)
+
+    if request.method == 'POST':
+        product.name = request.form['name']
+        product.price = float(request.form['price'])
+        product.stock = int(request.form.get('stock', 0))
+        product.description = request.form.get('description', '')
+
+        try:
+            db.session.commit()
+            flash('Product updated successfully!', 'success')
+            return redirect(url_for('index'))
+        except Exception as e:
+            db.session.rollback()
+            flash('Error updating product', 'danger')
+
+    return render_template('edit.html', product=product)
+
+
 
 # =============================================================================
 # INITIALIZE DATABASE
