@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Product Inventory</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+
+<body>
+
+<div class="dashboard-layout">
+
+    <!-- LEFT -->
+    <div class="page-hero">
+        <h1 class="page-title">Product Inventory</h1>
+        
+        <a href="/add" class="btn btn-primary hero-btn">+ Add Product</a>
+    </div>
+
+    <!-- RIGHT -->
+    <div class="dashboard-right">
+
+        <!-- STATS -->
+        <div class="stats-grid">
+            <div class="stat-card stat-green">
+                <span class="stat-label">Total Inventory Value</span>
+                <span class="stat-value">
+                    ₹ {{ "%.2f"|format(total_value) }}
+                </span>
+            </div>
+
+            <div class="stat-card stat-blue">
+                <span class="stat-label">Total Products</span>
+                <span class="stat-value">{{ products|length }}</span>
+            </div>
+
+            <div class="stat-card stat-purple">
+                <span class="stat-label">Total Quantity</span>
+                <span class="stat-value">
+                    {{ products | sum(attribute='quantity') }}
+                </span>
+            </div>
+        </div>
+
+
+            {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+            {% for category, message in messages %}
+            <div class="alert alert-{{ category }}">
+                {{ message }}
+            </div>
+            {% endfor %}
+            {% endif %}
+            {% endwith %}
+
+
+            <div class="table-wrapper">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Name</th>
+                            <th>Quantity</th>
+                            <th>Price (₹)</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for product in products %}
+                        <tr>
+                            <td>{{ product.id }}</td>
+                            <td>{{ product.name }}</td>
+                            <td>{{ product.quantity }}</td>
+                            <td>{{ product.price }}</td>
+                            <td class="actions">
+                                <a href="/edit/{{ product.id }}" class="btn btn-primary">Edit</a>
+                                <a href="/delete/{{ product.id }}" class="btn btn-danger"
+                                    onclick="return confirm('Are you sure you want to delete this product?')">Delete</a>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+</body>
+
+</html>
